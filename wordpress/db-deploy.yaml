@@ -1,0 +1,47 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: db-deploy
+  labels:
+    name: db-deploy
+
+spec:
+  replicas: 1 # can only be one since its relational database
+  selector:
+    matchLabels:
+      name: dbpod
+
+  template:
+    metadata:
+      name: dbpod
+      labels:
+        name: dbpod
+    spec:
+      containers:
+      - name: db-container
+        image: secondspace/bgg:v1
+        imagePullPolicy: IfNotPresent
+        ports:
+        - containerPort: 3306
+        resources: 
+          requests:
+            cpu: 100m
+            memory: 32Mi
+
+---
+apiVersion: v1
+kind: Service
+metadata: 
+  name: db-service
+  labels:
+    name: db-service
+spec:
+  type: ClusterIP 
+  selector: 
+    name: dbpod
+  ports:
+  - port: 3306
+    targetPort: 3306
+      
+    

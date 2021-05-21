@@ -1,0 +1,54 @@
+---
+apiVersion: v1
+kind: persistentVolumeClaim
+metadata:
+ name: wp-pvc
+ labels:
+   name: wp-pvc
+spec:
+  persistentVolumeClaim:
+    storageClassName: do-block-storage
+    accessModes:
+    - ReadWriteOnce
+    resources:
+      request:
+        storage: 1Gi
+
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: wordpress-deploy
+  labels:
+    name: wordpress-deploy
+spec:
+  selector:
+    matchLabels:
+      name: wordpresspod
+  template:
+    metadata:
+      name: wordpresspod
+      labels:
+        name: wordpresspod
+    spec:
+      containers:
+      - name: wordpress-container
+        image: wordpress:latest
+        imagePullPolicy: IfNotPresent
+        fromEnv:
+        - secretRef: 
+          name: wp-secret
+        - ConfigMapRef:
+          name: wp-cm
+
+        ports:
+        - name: wp-port
+          containerPort: 80
+          volumeMounts: 
+          - name: wp-vol
+          mountPath: /var/www/html
+
+        resources: 
+          requests:
+            cpu: 100m
+            memory: 32Mi

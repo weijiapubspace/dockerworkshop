@@ -1,0 +1,43 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: fortune-deploy
+  labels:
+    name: fortune-deploy
+
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      name: fortunepod
+
+  template:
+    metadata:
+      name: fortunepod
+      labels:
+        name: fortunepod
+    spec:
+      containers:
+      - name: fortune-container
+        image: secondspace/fortune:v1
+        imagePullPolicy: IfNotPresent
+        ports:
+        - containerPort: 3000 
+
+---
+apiVersion: v1
+kind: Service
+metadata: 
+  name: fortune-service
+  labels:
+    name: fortune-service
+spec:
+  type: LoadBalancer
+  selector: 
+    name: fortunepod
+  ports:
+  - port: 3085
+    targetPort: 3000
+      
+    

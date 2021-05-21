@@ -1,0 +1,43 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: bggdb-deploy
+  labels:
+    name: bggdb-deploy
+
+spec:
+  replicas: 1 # can only be one since its relational database
+  selector:
+    matchLabels:
+      name: bggpod
+
+  template:
+    metadata:
+      name: bggpod
+      labels:
+        name: bggpod
+    spec:
+      containers:
+      - name: bggdb-container
+        image: secondspace/bgg:v1
+        imagePullPolicy: IfNotPresent
+        ports:
+        - containerPort: 3306
+
+---
+apiVersion: v1
+kind: Service
+metadata: 
+  name: bggdb-service
+  labels:
+    name: bggdb-service
+spec:
+  type: ClusterIP 
+  selector: 
+    name: bggpod
+  ports:
+  - port: 3306
+    targetPort: 3306
+      
+    

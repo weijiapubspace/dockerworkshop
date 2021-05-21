@@ -1,0 +1,24 @@
+---
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: allow-ins-netpol
+  labels:
+    name: allow-ins-netpol
+
+spec:
+  podSelector:
+    matchLabels:
+      name: fortunepod
+  policyTypes:
+  - Ingress
+  ingress:
+  - from: 
+    - namespaceSelector: 
+        matchLabels: 
+          name: ingress
+      podSelector: 
+        matchLabels:
+          app.kubernetes.io/component: controller
+          
+
